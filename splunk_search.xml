@@ -1,0 +1,58 @@
+<form>
+  <label>REDACTED</label>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="search_time" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliestTime>-3d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+    <input type="multiselect" token="node_list" searchWhenChanged="true">
+      <label>Host</label>
+      <populatingSearch earliest="-30d" latest="now" fieldForLabel="Source_Node" fieldForValue="Source_Node">index=oss_apps sourcetype=omu_events | dedup Source_Node sortby Source_Node | table Source_Node</populatingSearch>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>Source_Node="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="checkbox" token="severity">
+      <label>Severity</label>
+      <choice value="critical">Critical</choice>
+      <choice value="major">Major</choice>
+      <choice value="minor">Minor</choice>
+      <choice value="warning">Warning</choice>
+      <choice value="normal">Normal</choice>
+      <default>critical,major,minor,warning,normal</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>Severity="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <searchString>index=oss_apps sourcetype=omu_events $node_list$ $severity$ | table _time Severity Source_Node Application Message_Group Object MESSAGE_TEXT | sort - time</searchString>
+        <earliestTime>$search_time.earliest$</earliestTime>
+        <latestTime>$search_time.latest$</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="list.drilldown">full</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+        <option name="drilldown">cell</option>
+        <option name="count">30</option>
+      </table>
+    </panel>
+  </row>
+</form>
